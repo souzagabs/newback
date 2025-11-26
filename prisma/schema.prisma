@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id       Int      @id @default(autoincrement())
+  nome     String?
+  email    String?  @unique
+  senha    String?
+  role     Role
+  criadoEm DateTime @default(now())
+
+  // Relação inversa correta para cursos do instrutor
+  cursos Curso[] @relation("InstrutorCursos")
+
+  feedbacks Feedback[]
+}
+
+model Curso {
+  id        Int     @id @default(autoincrement())
+  nome      String
+  descricao String?
+
+  instrutorId Int
+  instrutor   Usuario @relation("InstrutorCursos", fields: [instrutorId], references: [id])
+
+  modulos   Modulo[]
+  feedbacks Feedback[]
+  quizzes   Quiz[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Modulo {
+  id           Int     @id @default(autoincrement())
+  titulo       String
+  tipoConteudo String
+  urlConteudo  String?
+
+  cursoId Int
+  curso   Curso @relation(fields: [cursoId], references: [id])
+
+  quizzes Quiz[]
+}
+
+model Quiz {
+  id              Int    @id @default(autoincrement())
+  pergunta        String
+  opcoes          String
+  respostaCorreta String
+
+  moduloId Int
+  modulo   Modulo @relation(fields: [moduloId], references: [id])
+  curso    Curso? @relation(fields: [cursoId], references: [id])
+  cursoId  Int?
+}
+
+model Feedback {
+  id         Int     @id @default(autoincrement())
+  avaliacao  Int
+  comentario String?
+
+  cursoId   Int
+  usuarioId Int
+
+  criadoEm DateTime @default(now())
+
+  curso   Curso   @relation(fields: [cursoId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+}
+
+enum Role {
+  ALUNO
+  INSTRUTOR
+}
