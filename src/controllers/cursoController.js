@@ -47,13 +47,13 @@ async function listarCursosPorInstrutor(req, res) {
   }
 
   try {
-    console.log("Listando cursos para o instrutor:", userId); // Log para verificar o instrutor logado
+    console.log("Listando cursos para o instrutor:", userId); 
     const cursos = await prisma.curso.findMany({
       where: {
         instrutorId: userId,
       },
       include: {
-        modulos: true, // Certifique-se de que os módulos estão sendo carregados
+        modulos: true, 
       },
     });
 
@@ -66,11 +66,11 @@ async function listarCursosPorInstrutor(req, res) {
 }
 
 async function listarCursoPorId(req, res) {
-  const { id } = req.params;  // Pega o ID da URL
-  console.log("ID recebido da URL:", id);  // Verifique o id aqui
+  const { id } = req.params;  
+  console.log("ID recebido da URL:", id);
 
   try {
-    // Garantindo que o ID seja um número
+    // Garante que o ID seja um número
     const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) {
       return res.status(400).json({ error: "ID inválido" });
@@ -78,14 +78,14 @@ async function listarCursoPorId(req, res) {
 
     // Busca o curso, incluindo os módulos e o instrutor
     const curso = await prisma.curso.findUnique({
-      where: { id: cursoId },  // Usando o ID numérico
+      where: { id: cursoId },  
       include: {
-        instrutor: true,  // Inclui o instrutor associado ao curso
-        modulos: true,    // Inclui os módulos do curso
+        instrutor: true,  
+        modulos: true,    
       },
     });
 
-    console.log("Curso encontrado:", curso);  // Verifique o curso retornado
+    console.log("Curso encontrado:", curso);  
 
     if (!curso) {
       return res.status(404).json({ error: "Curso não encontrado" });
