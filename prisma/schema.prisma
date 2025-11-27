@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is your Prisma schema file
 
 generator client {
   provider = "prisma-client-js"
@@ -22,9 +18,9 @@ model Usuario {
   criadoEm DateTime @default(now())
 
   // Relação inversa correta para cursos do instrutor
-  cursos Curso[] @relation("InstrutorCursos")
-
-  feedbacks Feedback[]
+  cursos     Curso[]      @relation("InstrutorCursos")
+  feedbacks  Feedback[]   // Feedbacks deixados pelo usuário
+  inscricoes Inscricao[]  // Relacionamento com os cursos em que o aluno está inscrito
 }
 
 model Curso {
@@ -35,9 +31,10 @@ model Curso {
   instrutorId Int
   instrutor   Usuario @relation("InstrutorCursos", fields: [instrutorId], references: [id])
 
-  modulos   Modulo[]
-  feedbacks Feedback[]
-  quizzes   Quiz[]
+  modulos    Modulo[]
+  feedbacks  Feedback[]
+  quizzes    Quiz[]
+  inscricoes Inscricao[] // Relacionamento com os alunos inscritos no curso
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,6 +76,19 @@ model Feedback {
 
   curso   Curso   @relation(fields: [cursoId], references: [id])
   usuario Usuario @relation(fields: [usuarioId], references: [id])
+}
+
+// Tabela de Inscrição, que faz o relacionamento entre Aluno (Usuario) e Curso
+model Inscricao {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  cursoId   Int
+  createdAt DateTime @default(now())
+
+  usuario   Usuario @relation(fields: [userId], references: [id])
+  curso     Curso   @relation(fields: [cursoId], references: [id])
+
+  @@unique([userId, cursoId]) // Garante que o aluno não possa se inscrever em um curso mais de uma vez
 }
 
 enum Role {

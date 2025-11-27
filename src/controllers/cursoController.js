@@ -66,32 +66,29 @@ async function listarCursosPorInstrutor(req, res) {
 }
 
 async function listarCursoPorId(req, res) {
-  const { id } = req.params;  
+  const { id } = req.params;
   console.log("ID recebido da URL:", id);
 
   try {
-    // Garante que o ID seja um número
     const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) {
       return res.status(400).json({ error: "ID inválido" });
     }
 
-    // Busca o curso, incluindo os módulos e o instrutor
     const curso = await prisma.curso.findUnique({
-      where: { id: cursoId },  
+      where: { id: cursoId },
       include: {
-        instrutor: true,  
-        modulos: true,    
+        instrutor: true,
+        modulos: true,
       },
     });
-
-    console.log("Curso encontrado:", curso);  
 
     if (!curso) {
       return res.status(404).json({ error: "Curso não encontrado" });
     }
 
-    return res.status(200).json(curso);  // Retorna os detalhes do curso
+    // Remover a verificação do 'role' para que qualquer usuário tenha acesso
+    return res.status(200).json(curso);
   } catch (error) {
     console.error("Erro ao buscar curso:", error);
     return res.status(500).json({ error: "Erro ao buscar curso", details: error.message });
