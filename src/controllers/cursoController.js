@@ -1,10 +1,25 @@
-import prisma from '../models/prisma.js';
+import prisma from "../models/prisma.js";
+
+async function listarCursos(req, res) {
+  try {
+    const cursos = await prisma.curso.findMany({
+      include: {
+        instrutor: true,
+      },
+    });
+
+    return res.status(200).json(cursos);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    return res.status(500).json({ error: "Erro ao listar cursos" });
+  }
+}
 
 async function criarCurso(req, res) {
-  const { nome, descricao } = req.body;
-  const { id: userId, role } = req.user; 
+  const { nome, descricao} = req.body;
+  const { id: userId, role } = req.user;
 
-  if (role !== 'INSTRUTOR') {
+  if (role !== "INSTRUTOR") {
     return res.status(403).json({ error: "Somente instrutores podem criar cursos" });
   }
 
@@ -16,66 +31,151 @@ async function criarCurso(req, res) {
         instrutorId: userId,
       },
     });
+
     return res.status(201).json(curso);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar curso:", error);
     return res.status(500).json({ error: "Erro ao criar curso" });
   }
 }
 
-async function listarCursos(req, res) {
+async function listarCursosPorInstrutor(req, res) {
+  const { id: userId, role } = req.user;  
+  console.log("ID do instrutor logado:", userId); 
+
+  if (role !== "INSTRUTOR") {
+    return res.status(403).json({ error: "Acesso negado" });
+  }
+
   try {
     const cursos = await prisma.curso.findMany({
+      where: {
+        instrutorId: userId,
+      },
       include: {
-        instrutor: true,
+        modulos: true,
       },
     });
-    return res.status(200).json(cursos);
+
+    console.log("Cursos encontrados para o instrutor:", cursos); 
+
+    if (cursos.length === 0) {
+      return res.status(404).json({ error: "Nenhum curso encontrado para o instrutor." });
+    }
+
+    return res.status(200).json(cursos);  
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao listar cursos do instrutor:", error);
     return res.status(500).json({ error: "Erro ao listar cursos" });
+  }
+}
+
+
+async function listarCursoPorId(req, res) {
+  const { id } = req.params;
+  console.log("ID recebido da URL:", id);
+
+  try {
+    const cursoId = parseInt(id, 10);
+    if (isNaN(cursoId)) {
+      return res.status(400).json({ error: "ID inválido, sou do método listarCursoPorId" });
+    }
+
+    const curso = await prisma.curso.findUnique({
+      where: { id: cursoId },
+      include: {
+        instrutor: true,
+        modulos: true,
+      },
+    });
+
+    if (!curso) {
+      return res.status(404).json({ error: "Curso não encontrado" });
+    }
+
+    // Remover a verificação do 'role' para que qualquer usuário tenha acesso
+    return res.status(200).json(curso);
+  } catch (error) {
+    console.error("Erro ao buscar curso:", error);
+    return res.status(500).json({ error: "Erro ao buscar curso", details: error.message });
   }
 }
 
 async function atualizarCurso(req, res) {
   const { id } = req.params;
   const { nome, descricao } = req.body;
+  const { id: userId, role } = req.user;
 
-  if (role !== 'INSTRUTOR') {
-    return res.status(403).json({ error: "Somente instrutores podem criar cursos" });
+  if (role !== "INSTRUTOR") {
+    return res.status(403).json({ error: "Apenas instrutores podem atualizar cursos" });
   }
 
   try {
-    const curso = await prisma.curso.update({
+    const curso = await prisma.curso.findUnique({
       where: { id: parseInt(id) },
-      data: { nome, descricao },
     });
-    return res.status(200).json(curso);
+
+    if (!curso) {
+      return res.status(404).json({ error: "Curso não encontrado" });
+    }
+
+    // garantir que o instrutor logado é o dono do curso
+    if (curso.instrutorId !== userId) {
+      return res.status(403).json({ error: "Você não é o dono deste curso" });
+    }
+
+    const cursoAtualizado = await prisma.curso.update({
+      where: { id: parseInt(id) },
+      data: {
+        nome,
+        descricao
+      },
+    });
+
+    return res.status(200).json(cursoAtualizado);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao atualizar curso:", error);
     return res.status(500).json({ error: "Erro ao atualizar curso" });
   }
 }
 
 async function deletarCurso(req, res) {
   const { id } = req.params;
+  const { id: userId, role } = req.user;
 
-  if (role !== 'INSTRUTOR') {
-    return res.status(403).json({ error: "Somente instrutores podem criar cursos" });
+  if (role !== "INSTRUTOR") {
+    return res.status(403).json({ error: "Apenas instrutores podem deletar cursos" });
   }
 
   try {
-    await prisma.curso.delete({ where: { id: parseInt(id) } });
-    return res.status(204).send(); // No content, indicando sucesso
+    const curso = await prisma.curso.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!curso) {
+      return res.status(404).json({ error: "Curso não encontrado" });
+    }
+
+    if (curso.instrutorId !== userId) {
+      return res.status(403).json({ error: "Você não é o dono deste curso" });
+    }
+
+    await prisma.curso.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return res.status(200).json({ message: "Curso deletado com sucesso" });
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao deletar curso:", error);
     return res.status(500).json({ error: "Erro ao deletar curso" });
   }
 }
 
 export default {
-  criarCurso,
   listarCursos,
+  criarCurso,
+  listarCursosPorInstrutor,
+  listarCursoPorId,
   atualizarCurso,
   deletarCurso,
 };

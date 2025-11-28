@@ -4,7 +4,7 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.post('/:cursoId', authMiddleware, feedbackController.criarFeedback); // Criar feedback
-router.get('/:cursoId', authMiddleware, feedbackController.listarFeedbacks); // Listar feedbacks
+router.post('/:cursoId', authMiddleware, feedbackController.criarFeedback); 
+router.get('/:cursoId', authMiddleware, feedbackController.listarFeedbacks); 
 
 export default router;
