@@ -17,6 +17,7 @@ app.use(express.json());
 app.use('/login', loginRoutes);
 app.use('/auth', authRoutes);
 
+app.get('/cursos/meuscursos', authMiddleware, cursoController.listarCursosPorInstrutor)
 app.get('/cursos', cursoController.listarCursos);
 app.get('/cursos/:id', cursoController.listarCursoPorId);
 

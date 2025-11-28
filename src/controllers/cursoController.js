@@ -40,30 +40,36 @@ async function criarCurso(req, res) {
 }
 
 async function listarCursosPorInstrutor(req, res) {
-  const { id: userId, role } = req.user;
+  const { id: userId, role } = req.user;  
+  console.log("ID do instrutor logado:", userId); 
 
   if (role !== "INSTRUTOR") {
     return res.status(403).json({ error: "Acesso negado" });
   }
 
   try {
-    console.log("Listando cursos para o instrutor:", userId); 
     const cursos = await prisma.curso.findMany({
       where: {
         instrutorId: userId,
       },
       include: {
-        modulos: true, 
+        modulos: true,
       },
     });
 
-    console.log("Cursos encontrados:", cursos); // Verifique o que está sendo retornado
-    return res.status(200).json(cursos);
+    console.log("Cursos encontrados para o instrutor:", cursos); 
+
+    if (cursos.length === 0) {
+      return res.status(404).json({ error: "Nenhum curso encontrado para o instrutor." });
+    }
+
+    return res.status(200).json(cursos);  
   } catch (error) {
     console.error("Erro ao listar cursos do instrutor:", error);
     return res.status(500).json({ error: "Erro ao listar cursos" });
   }
 }
+
 
 async function listarCursoPorId(req, res) {
   const { id } = req.params;
@@ -72,7 +78,7 @@ async function listarCursoPorId(req, res) {
   try {
     const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) {
-      return res.status(400).json({ error: "ID inválido" });
+      return res.status(400).json({ error: "ID inválido, sou do método listarCursoPorId" });
     }
 
     const curso = await prisma.curso.findUnique({
@@ -113,7 +119,7 @@ async function atualizarCurso(req, res) {
       return res.status(404).json({ error: "Curso não encontrado" });
     }
 
-    // garante que o instrutor logado é o dono do curso
+    // garantir que o instrutor logado é o dono do curso
     if (curso.instrutorId !== userId) {
       return res.status(403).json({ error: "Você não é o dono deste curso" });
     }
