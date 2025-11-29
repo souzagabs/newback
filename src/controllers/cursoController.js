@@ -171,11 +171,47 @@ async function deletarCurso(req, res) {
   }
 }
 
+async function listarMeusCursos(req, res) {
+  const { id: userId, role } = req.user; 
+
+  try {
+    let cursos = [];
+
+    if (role === "ALUNO") {
+      const inscricoes = await prisma.inscricao.findMany({
+        where: { userId },
+        include: {
+          curso: true, // Inclui os cursos associados à inscrição
+        },
+      });
+      cursos = inscricoes.map(item => item.curso);
+    }
+
+    if (role === "INSTRUTOR") {
+      const cursosCriados = await prisma.curso.findMany({
+        where: { instrutorId: userId },
+        include: { modulos: true },
+      });
+      cursos = cursos.concat(cursosCriados); // Junta os cursos do instrutor
+    }
+
+    if (cursos.length === 0) {
+      return res.status(404).json({ error: "Nenhum curso encontrado para este usuário." });
+    }
+
+    return res.status(200).json(cursos);  // Retorna todos os cursos
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    return res.status(500).json({ error: "Erro ao listar cursos." });
+  }
+}
+
 export default {
   listarCursos,
   criarCurso,
   listarCursosPorInstrutor,
   listarCursoPorId,
   atualizarCurso,
+  listarMeusCursos,
   deletarCurso,
 };

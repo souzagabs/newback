@@ -1,6 +1,5 @@
 import prisma from '../models/prisma.js';
 
-
 async function criarFeedback(req, res) {
   const { cursoId, avaliacao, comentario } = req.body;
   const { id: userId, role } = req.user;
