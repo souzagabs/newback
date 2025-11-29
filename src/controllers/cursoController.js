@@ -119,7 +119,6 @@ async function atualizarCurso(req, res) {
       return res.status(404).json({ error: "Curso não encontrado" });
     }
 
-    // garantir que o instrutor logado é o dono do curso
     if (curso.instrutorId !== userId) {
       return res.status(403).json({ error: "Você não é o dono deste curso" });
     }
@@ -177,28 +176,25 @@ async function listarMeusCursos(req, res) {
     let cursos = [];
 
     if (role === "ALUNO") {
-      // Buscando os cursos que o aluno está inscrito
       const inscricoes = await prisma.inscricao.findMany({
         where: { userId },
         include: {
-          curso: true, // Inclui os cursos associados à inscrição
+          curso: true,
         },
       });
       cursos = inscricoes.map(item => item.curso);
     }
 
     if (role === "INSTRUTOR") {
-      // Cursos que o instrutor criou
       const cursosCriados = await prisma.curso.findMany({
         where: { instrutorId: userId },
         include: { modulos: true },
       });
 
-      // Cursos nos quais o instrutor se inscreveu
       const cursosInscritos = await prisma.inscricao.findMany({
         where: { userId },
         include: {
-          curso: true, // Inclui os cursos associados à inscrição
+          curso: true, 
         },
       });
 
@@ -210,7 +206,7 @@ async function listarMeusCursos(req, res) {
       return res.status(404).json({ error: "Nenhum curso encontrado para este usuário." });
     }
 
-    return res.status(200).json(cursos);  // Retorna todos os cursos
+    return res.status(200).json(cursos);  
   } catch (error) {
     console.error("Erro ao listar cursos:", error);
     return res.status(500).json({ error: "Erro ao listar cursos." });
