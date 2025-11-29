@@ -11,15 +11,20 @@ import authMiddleware from './middleware/authMiddleware.js';
 import cursoController from './controllers/cursoController.js';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  
+  allowedHeaders: ['Content-Type', 'Authorization'],  
+}));
 app.use(express.json());
 
 app.use('/login', loginRoutes);
 app.use('/auth', authRoutes);
 
-app.get('/cursos/meuscursos', authMiddleware, cursoController.listarCursosPorInstrutor)
+app.get('/cursos/meuscursos', authMiddleware, cursoController.listarCursosPorInstrutor);
 app.get('/cursos', cursoController.listarCursos);
 app.get('/cursos/:id', cursoController.listarCursoPorId);
+app.use('/cursos', cursoRoutes);
 
 app.use('/cursos', authMiddleware, cursoRoutes);
 app.use('/modulos', authMiddleware, moduloRoutes);
