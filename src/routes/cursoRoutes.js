@@ -6,11 +6,13 @@ import { inscreverCurso } from "../controllers/inscricaoController.js";
 const router = Router();
 
 router.get('/', cursoController.listarCursos); 
-router.get('/:id', cursoController.listarCursoPorId);
+
 router.get('/cursos/meuscursos', authMiddleware, cursoController.listarCursosPorInstrutor);
 router.get('/meuscursos', authMiddleware, cursoController.listarMeusCursos);
+
 router.post('/', authMiddleware, cursoController.criarCurso);
 router.post("/inscricoes", authMiddleware, inscreverCurso);
+router.get('/:id', cursoController.listarCursoPorId);
 router.delete('/:id', authMiddleware, cursoController.deletarCurso);
 router.put('/:id', authMiddleware, cursoController.atualizarCurso);
 

@@ -170,14 +170,14 @@ async function deletarCurso(req, res) {
     return res.status(500).json({ error: "Erro ao deletar curso" });
   }
 }
-
 async function listarMeusCursos(req, res) {
-  const { id: userId, role } = req.user; 
+  const { id: userId, role } = req.user;
 
   try {
     let cursos = [];
 
     if (role === "ALUNO") {
+      // Buscando os cursos que o aluno está inscrito
       const inscricoes = await prisma.inscricao.findMany({
         where: { userId },
         include: {
@@ -188,11 +188,22 @@ async function listarMeusCursos(req, res) {
     }
 
     if (role === "INSTRUTOR") {
+      // Cursos que o instrutor criou
       const cursosCriados = await prisma.curso.findMany({
         where: { instrutorId: userId },
         include: { modulos: true },
       });
-      cursos = cursos.concat(cursosCriados); // Junta os cursos do instrutor
+
+      // Cursos nos quais o instrutor se inscreveu
+      const cursosInscritos = await prisma.inscricao.findMany({
+        where: { userId },
+        include: {
+          curso: true, // Inclui os cursos associados à inscrição
+        },
+      });
+
+      // Concatenando os cursos criados com os cursos inscritos
+      cursos = cursosCriados.concat(cursosInscritos.map(item => item.curso));
     }
 
     if (cursos.length === 0) {
@@ -205,6 +216,7 @@ async function listarMeusCursos(req, res) {
     return res.status(500).json({ error: "Erro ao listar cursos." });
   }
 }
+
 
 export default {
   listarCursos,
