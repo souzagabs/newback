@@ -17,12 +17,15 @@ export function authMiddleware(req, res, next) {
 
     console.log("Usuário autenticado:", req.user);
 
+    // Permitir acesso a essas rotas
     if (req.originalUrl.includes('/cursos/meuscursos')) {
-      return next(); 
+      return next();
     }
+
     if (req.originalUrl.includes('/inscricoes')) {
       return next();  
     }
+
     // Para outras rotas, validar se é instrutor
     if (req.user.role !== "INSTRUTOR") {
       return res.status(403).json({ error: "Somente instrutores podem acessar esta rota" });
