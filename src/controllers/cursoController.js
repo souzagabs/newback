@@ -175,18 +175,17 @@ async function listarMeusCursos(req, res) {
     let cursos = [];
 
     if (role === "ALUNO") {
-      // Buscando os cursos que o aluno está inscrito
       const inscricoes = await prisma.inscricao.findMany({
         where: { userId },
         include: {
           curso: {
             include: {
-              inscricoes: true,  // Inclui as inscrições de cada curso
+              inscricoes: true, 
             },
           },
         },
       });
-      cursos = inscricoes.map(item => item.curso); // Mapeia os cursos para incluir as inscrições
+      cursos = inscricoes.map(item => item.curso); 
     }
 
     if (role === "INSTRUTOR") {
@@ -195,11 +194,10 @@ async function listarMeusCursos(req, res) {
         include: { modulos: true, inscricoes: true },
       });
 
-      // Cursos nos quais o instrutor está inscrito
       const cursosInscritos = await prisma.inscricao.findMany({
         where: { userId },
         include: {
-          curso: true, // Inclui os cursos nos quais o instrutor está inscrito
+          curso: true, 
         },
       });
 
