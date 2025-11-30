@@ -18,18 +18,26 @@ export const obterUsuarioLogado = async (req, res) => {
       return res.status(400).json({ message: "Token inválido ou usuário não autenticado." });
     }
 
-    const usuarioId = req.user.id;
+    const usuarioId = req.user.id; 
 
-    // Busca o usuário no banco de dados usando Prisma
+    // Limitar a busca ao próprio usuário para um ALUNO
     const usuario = await prisma.usuario.findUnique({
       where: { id: usuarioId },
-    });
+      include: {
+          inscricoes: {
+            include: {
+              curso: true,
+            },
+          },
+        },
+      });
+    
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuário não encontrado!" });
     }
 
-    return res.status(200).json(usuario);
+    return res.status(200).json(usuario); 
 
   } catch (err) {
     console.error('Erro ao buscar usuário:', err);

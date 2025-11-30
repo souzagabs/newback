@@ -3,7 +3,7 @@ import moduloController from '../controllers/moduloController.js';
 
 const router = Router();
 
-router.get('/:cursoId/:moduloId', moduloController.listarModulos); // Adicionando :moduloId
+router.get('/:cursoId/:moduloId', moduloController.listarModulos);
 router.post('/:cursoId', moduloController.criarModulo);
 
 export default router;
