@@ -6,7 +6,7 @@ import quizRoutes from './routes/quizRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
-import usersRoutes from "./routes/usersRoutes.js";
+import usersRoutes from "./routes/usersmeRoutes.js"; 
 import authMiddleware from './middleware/authMiddleware.js';
 import cursoController from './controllers/cursoController.js';
 
