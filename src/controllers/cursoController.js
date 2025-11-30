@@ -170,49 +170,52 @@ async function deletarCurso(req, res) {
   }
 }
 async function listarMeusCursos(req, res) {
-  const { id: userId, role } = req.user;
-
+  const { id: userId, role } = req.user; 
   try {
     let cursos = [];
 
     if (role === "ALUNO") {
+      // Buscando os cursos que o aluno está inscrito
       const inscricoes = await prisma.inscricao.findMany({
         where: { userId },
         include: {
-          curso: true,
+          curso: {
+            include: {
+              inscricoes: true,  // Inclui as inscrições de cada curso
+            },
+          },
         },
       });
-      cursos = inscricoes.map(item => item.curso);
+      cursos = inscricoes.map(item => item.curso); // Mapeia os cursos para incluir as inscrições
     }
 
     if (role === "INSTRUTOR") {
       const cursosCriados = await prisma.curso.findMany({
         where: { instrutorId: userId },
-        include: { modulos: true },
+        include: { modulos: true, inscricoes: true },
       });
 
+      // Cursos nos quais o instrutor está inscrito
       const cursosInscritos = await prisma.inscricao.findMany({
         where: { userId },
         include: {
-          curso: true, 
+          curso: true, // Inclui os cursos nos quais o instrutor está inscrito
         },
       });
 
-      // Concatenando os cursos criados com os cursos inscritos
-      cursos = cursosCriados.concat(cursosInscritos.map(item => item.curso));
+      cursos = cursosCriados.concat(cursosInscritos.map(item => item.curso)); // Concatenando os cursos criados e os cursos inscritos
     }
 
     if (cursos.length === 0) {
       return res.status(404).json({ error: "Nenhum curso encontrado para este usuário." });
     }
 
-    return res.status(200).json(cursos);  
+    return res.status(200).json(cursos);  // Retorna todos os cursos com inscrições
   } catch (error) {
     console.error("Erro ao listar cursos:", error);
     return res.status(500).json({ error: "Erro ao listar cursos." });
   }
 }
-
 
 export default {
   listarCursos,
