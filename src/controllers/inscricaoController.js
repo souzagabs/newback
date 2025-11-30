@@ -54,3 +54,4 @@ export async function inscreverCurso(req, res) {
     return res.status(500).json({ error: "Erro ao inscrever-se no curso." });
   }
 }
+
