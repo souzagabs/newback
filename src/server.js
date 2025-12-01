@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import usersRoutes from "./routes/usersmeRoutes.js"; 
 import authMiddleware from './middleware/authMiddleware.js';
 import cursoController from './controllers/cursoController.js';
+import progressoRoutes from "./routes/progressoRoutes.js";
 
 const app = express();
 app.use(cors({
@@ -27,7 +28,7 @@ app.get('/cursos', cursoController.listarCursos);
 app.use('/cursos', cursoRoutes);
 app.get('/cursos/meuscursos', authMiddleware, cursoController.listarMeusCursos);
 
-
+app.use('/progresso', authMiddleware, progressoRoutes);
 app.use('/cursos', authMiddleware, cursoRoutes);
 app.use('/modulos', authMiddleware, moduloRoutes);
 app.use('/quizzes', authMiddleware, quizRoutes);

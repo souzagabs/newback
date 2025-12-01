@@ -11,9 +11,8 @@ const loginController = {
     if (!usuario) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
-
     const isPasswordValid = await bcrypt.compare(senha, usuario.senha);
-
+    
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
@@ -24,7 +23,6 @@ const loginController = {
      { expiresIn: '1h' }
 );
 
-    // Log para verificar o conteúdo do token
     console.log("Token gerado:", token); 
 
     return res.status(200).json({ token });

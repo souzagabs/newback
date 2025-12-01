@@ -28,7 +28,7 @@ export function authMiddleware(req, res, next) {
 
     // Se o usuário não for instrutor, mas for aluno, ainda podemos permitir a requisição
     if (req.user.role === "ALUNO") {
-      return next();  // Permitir acesso às rotas para ALUNO
+      return next(); 
     }
 
     // Para outras rotas, validar se é instrutor
