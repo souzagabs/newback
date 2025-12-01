@@ -93,7 +93,7 @@ async function listarCursoPorId(req, res) {
       return res.status(404).json({ error: "Curso não encontrado" });
     }
 
-    // Remover a verificação do 'role' para que qualquer usuário tenha acesso
+    // Remove a verificação do 'role' para que qualquer usuário tenha acesso
     return res.status(200).json(curso);
   } catch (error) {
     console.error("Erro ao buscar curso:", error);
