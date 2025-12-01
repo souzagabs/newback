@@ -7,8 +7,10 @@ const router = Router();
 
 router.get('/', cursoController.listarCursos); 
 
-router.get('/cursos/meuscursos', authMiddleware, cursoController.listarCursosPorInstrutor);
+// router.get('/cursos/meuscursos', ...)
+
 router.get('/meuscursos', authMiddleware, cursoController.listarMeusCursos);
+router.get('/meuscursos/instrutor', authMiddleware, cursoController.listarCursosPorInstrutor); 
 
 router.post('/', authMiddleware, cursoController.criarCurso);
 router.post("/inscricoes", authMiddleware, inscreverCurso);

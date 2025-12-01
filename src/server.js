@@ -8,7 +8,6 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import usersRoutes from "./routes/usersmeRoutes.js"; 
 import authMiddleware from './middleware/authMiddleware.js';
-import cursoController from './controllers/cursoController.js';
 import progressoRoutes from "./routes/progressoRoutes.js";
 
 const app = express();
@@ -22,20 +21,13 @@ app.use(express.json());
 app.use('/login', loginRoutes);
 app.use('/auth', authRoutes);
 
-//app.get('/cursos/meuscursos', authMiddleware, cursoController.listarCursosPorInstrutor);
-
-app.get('/cursos', cursoController.listarCursos);
 app.use('/cursos', cursoRoutes);
-app.get('/cursos/meuscursos', authMiddleware, cursoController.listarMeusCursos);
 
 app.use('/progresso', authMiddleware, progressoRoutes);
-app.use('/cursos', authMiddleware, cursoRoutes);
 app.use('/modulos', authMiddleware, moduloRoutes);
 app.use('/quizzes', authMiddleware, quizRoutes);
 app.use('/feedbacks', authMiddleware, feedbackRoutes);
 app.use('/usuarios', authMiddleware, usersRoutes);
-
-app.get('/cursos/:id', cursoController.listarCursoPorId);
 
 app.listen(3000, () => {
     console.log("Servidor Ligado!");

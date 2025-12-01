@@ -93,7 +93,7 @@ async function listarCursoPorId(req, res) {
       return res.status(404).json({ error: "Curso não encontrado" });
     }
 
-    // Remover a verificação do 'role' para que qualquer usuário tenha acesso
+    // Remove a verificação do 'role' para que qualquer usuário tenha acesso
     return res.status(200).json(curso);
   } catch (error) {
     console.error("Erro ao buscar curso:", error);
@@ -147,8 +147,16 @@ async function deletarCurso(req, res) {
   }
 
   try {
+    const cursoId = parseInt(id);
+
     const curso = await prisma.curso.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: cursoId },
+      include: {
+        modulos: {
+          include: { progressos: true }
+        },
+        inscricoes: true
+      }
     });
 
     if (!curso) {
@@ -159,16 +167,36 @@ async function deletarCurso(req, res) {
       return res.status(403).json({ error: "Você não é o dono deste curso" });
     }
 
+    // 1. Deletar progresso
+    for (const modulo of curso.modulos) {
+      await prisma.progresso.deleteMany({
+        where: { moduloId: modulo.id }
+      });
+    }
+
+    // 2. Deletar módulos
+    await prisma.modulo.deleteMany({
+      where: { cursoId }
+    });
+
+    // 3. Deletar inscrições
+    await prisma.inscricao.deleteMany({
+      where: { cursoId }
+    });
+
+    // 4. Deletar o curso
     await prisma.curso.delete({
-      where: { id: parseInt(id) },
+      where: { id: cursoId }
     });
 
     return res.status(200).json({ message: "Curso deletado com sucesso" });
+
   } catch (error) {
     console.error("Erro ao deletar curso:", error);
-    return res.status(500).json({ error: "Erro ao deletar curso" });
+    return res.status(500).json({ error: "Erro ao deletar curso", details: error.message });
   }
 }
+
 async function listarMeusCursos(req, res) {
   const { id: userId, role } = req.user; 
   try {
