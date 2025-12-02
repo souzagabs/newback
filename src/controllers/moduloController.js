@@ -125,8 +125,6 @@ async function deletarModulo(req, res) {
   }
 }
 
-
-   //ATUALIZAR MÓDULOS EM LOTE (usado quando clica em SALVAR NO CURSO)
  
 async function atualizarModulosEmLote(req, res) {
   const { cursoId } = req.params;
@@ -191,10 +189,35 @@ async function atualizarModulosEmLote(req, res) {
   }
 }
 
+async function listarModuloEspecifico(req, res) {
+  const { cursoId, moduloId } = req.params;
+
+  try {
+    const modulo = await prisma.modulo.findFirst({
+      where: {
+        id: parseInt(moduloId),
+        cursoId: parseInt(cursoId)
+      }
+    });
+
+    if (!modulo) {
+      return res.status(404).json({ error: "Módulo não encontrado" });
+    }
+
+    res.json(modulo);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Erro ao buscar módulo" });
+  }
+}
+
+
 export default {
   criarModulo,
   listarModulos,
   atualizarModulo,
   deletarModulo,
-  atualizarModulosEmLote
+  atualizarModulosEmLote,
+  listarModuloEspecifico,
 };
