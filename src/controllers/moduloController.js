@@ -11,8 +11,13 @@ async function criarModulo(req, res) {
 
   try {
     const curso = await prisma.curso.findUnique({
-      where: { id: parseInt(cursoId) }
-    });
+  where: { id: parseInt(cursoId) },
+  include: {
+    instrutor: true,
+    modulos: true,
+  }
+});
+
 
     if (!curso) {
       return res.status(404).json({ error: "Curso não encontrado" });
@@ -23,13 +28,13 @@ async function criarModulo(req, res) {
     }
 
     const modulo = await prisma.modulo.create({
-      data: {
-        cursoId: parseInt(cursoId),
-        titulo,
-        tipoConteudo,
-        urlConteudo,
-      },
-    });
+  data: {
+    cursoId: parseInt(cursoId),
+    titulo,
+    tipoConteudo: tipoConteudo || "video",
+    urlConteudo,
+  },
+});
 
     return res.status(201).json(modulo);
 
