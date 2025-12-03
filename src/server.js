@@ -12,6 +12,8 @@ import authMiddleware from './middleware/authMiddleware.js';
 import progressoRoutes from "./routes/progressoRoutes.js";
 
 const app = express();
+app.set('trust proxy', true);
+
 app.use(cors({
   origin: [
     "http://localhost:5173",
