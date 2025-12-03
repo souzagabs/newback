@@ -22,6 +22,9 @@ app.use('/login', loginRoutes);
 app.use('/auth', authRoutes);
 
 app.use('/cursos', cursoRoutes);
+app.get("/", (req, res) => {
+  res.send("Servidor funcionando!");
+});
 
 app.use('/progresso', authMiddleware, progressoRoutes);
 app.use('/modulos', authMiddleware, moduloRoutes);
@@ -29,6 +32,7 @@ app.use('/quizzes', authMiddleware, quizRoutes);
 app.use('/feedbacks', authMiddleware, feedbackRoutes);
 app.use('/usuarios', authMiddleware, usersRoutes);
 
-app.listen(3000, () => {
-    console.log("Servidor Ligado!");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log("Server rodando na porta " + port);
 });
