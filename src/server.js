@@ -13,7 +13,11 @@ import progressoRoutes from "./routes/progressoRoutes.js";
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin:  [
+  'http://localhost:5173',
+  'https://newfront-self.vercel.app',
+  'https://newfront-k9tmev161-gabriel-brasils-projects-25ec471f.vercel.app'
+], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  
   allowedHeaders: ['Content-Type', 'Authorization'],  
 }));
