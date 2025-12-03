@@ -17,6 +17,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],  
 }));
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("Servidor funcionando!");
+});
 
 app.use('/login', loginRoutes);
 app.use('/auth', authRoutes);
@@ -31,6 +34,8 @@ app.use('/modulos', authMiddleware, moduloRoutes);
 app.use('/quizzes', authMiddleware, quizRoutes);
 app.use('/feedbacks', authMiddleware, feedbackRoutes);
 app.use('/usuarios', authMiddleware, usersRoutes);
+
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
