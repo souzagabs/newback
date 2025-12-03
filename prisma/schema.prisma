@@ -1,5 +1,3 @@
-// This is your Prisma schema file
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,50 +8,42 @@ datasource db {
 }
 
 model Usuario {
-  id       Int      @id @default(autoincrement())
-  nome     String?
-  email    String?  @unique
-  senha    String?
-  role     Role
-  criadoEm DateTime @default(now())
-
-  cursos     Curso[]      @relation("InstrutorCursos")
+  id         Int         @id @default(autoincrement())
+  nome       String?
+  email      String?     @unique
+  senha      String?
+  role       Role
+  criadoEm   DateTime    @default(now())
+  cursos     Curso[]     @relation("InstrutorCursos")
   feedbacks  Feedback[]
   inscricoes Inscricao[]
   progressos Progresso[]
 }
 
 model Curso {
-  id        Int     @id @default(autoincrement())
-  nome      String
-  descricao String?
-
+  id          Int         @id @default(autoincrement())
+  descricao   String?
   instrutorId Int
-  instrutor   Usuario @relation("InstrutorCursos", fields: [instrutorId], references: [id])
-
-  modulos    Modulo[]
-  feedbacks  Feedback[]
-  quizzes    Quiz[]
-  inscricoes Inscricao[]
-
-  progressos Progresso[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  nome        String
+  updatedAt   DateTime    @updatedAt
+  instrutor   Usuario     @relation("InstrutorCursos", fields: [instrutorId], references: [id])
+  feedbacks   Feedback[]
+  inscricoes  Inscricao[]
+  modulos     Modulo[]
+  progressos  Progresso[]
+  quizzes     Quiz[]
 }
 
 model Modulo {
-  id           Int     @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   titulo       String
   tipoConteudo String
   urlConteudo  String?
-
-  cursoId Int
-  curso   Curso @relation(fields: [cursoId], references: [id])
-
-  quizzes Quiz[]
-
-  progressos Progresso[]
+  cursoId      Int
+  curso        Curso       @relation(fields: [cursoId], references: [id])
+  progressos   Progresso[]
+  quizzes      Quiz[]
 }
 
 model Quiz {
@@ -61,25 +51,21 @@ model Quiz {
   pergunta        String
   opcoes          String
   respostaCorreta String
-
-  moduloId Int
-  modulo   Modulo @relation(fields: [moduloId], references: [id])
-  curso    Curso? @relation(fields: [cursoId], references: [id])
-  cursoId  Int?
+  moduloId        Int
+  cursoId         Int?
+  curso           Curso? @relation(fields: [cursoId], references: [id])
+  modulo          Modulo @relation(fields: [moduloId], references: [id])
 }
 
 model Feedback {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   avaliacao  Int
   comentario String?
-
-  cursoId   Int
-  usuarioId Int
-
-  criadoEm DateTime @default(now())
-
-  curso   Curso   @relation(fields: [cursoId], references: [id])
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  cursoId    Int
+  usuarioId  Int
+  criadoEm   DateTime @default(now())
+  curso      Curso    @relation(fields: [cursoId], references: [id])
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
 }
 
 model Inscricao {
@@ -87,28 +73,23 @@ model Inscricao {
   userId    Int
   cursoId   Int
   createdAt DateTime @default(now())
-
-  usuario   Usuario @relation(fields: [userId], references: [id])
-  curso     Curso   @relation(fields: [cursoId], references: [id])
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+  usuario   Usuario  @relation(fields: [userId], references: [id])
 
   @@unique([userId, cursoId])
 }
 
 model Progresso {
   id        Int      @id @default(autoincrement())
-
   userId    Int
   cursoId   Int
   moduloId  Int
-
   progresso Int      @default(0)
   completed Boolean  @default(false)
-
-  usuario Usuario @relation(fields: [userId], references: [id])
-  curso   Curso   @relation(fields: [cursoId], references: [id])
-  modulo  Modulo  @relation(fields: [moduloId], references: [id])
-
   createdAt DateTime @default(now())
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+  modulo    Modulo   @relation(fields: [moduloId], references: [id])
+  usuario   Usuario  @relation(fields: [userId], references: [id])
 
   @@unique([userId, moduloId])
 }

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import loginRoutes from './routes/loginRoutes.js';
 import cursoRoutes from './routes/cursoRoutes.js';
