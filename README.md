@@ -19,6 +19,7 @@ O projeto segue o padrão REST e está preparado para integração com um front-
 
 A aplicação segue uma arquitetura organizada por responsabilidade, separando controllers, rotas, middlewares e camada de acesso ao banco de dados, facilitando a manutenção e a evolução do código.
 
+```
 src/
 ├── controllers/
 │   ├── authController.js
@@ -45,6 +46,7 @@ prisma/
 └── migrations/
 .env
 package.json
+```
 
 ### **Requisitos**
 
@@ -101,46 +103,6 @@ ALUNO
 INSTRUTOR
 
 O controle de acesso garante que apenas usuários do tipo INSTRUTOR possam criar, editar ou excluir cursos e módulos.
-
-### **Rotas da API**
-
-Autenticação
-Método	Rota	Descrição
-POST	/auth/register	Cadastro de usuário
-POST	/auth/login	Autenticação e geração de token
-Usuários
-Método	Rota	Descrição
-GET	/usuarios/me	Retorna dados do usuário autenticado
-GET	/usuarios/:id/inscricoes	Cursos em que o aluno está inscrito
-Cursos
-Método	Rota	Descrição
-GET	/cursos	Lista todos os cursos
-GET	/cursos/:id	Detalhes de um curso
-POST	/cursos	Criação de curso (INSTRUTOR)
-PUT	/cursos/:id	Atualização de curso (INSTRUTOR)
-DELETE	/cursos/:id	Exclusão de curso (INSTRUTOR)
-Inscrição em Cursos
-Método	Rota	Descrição
-POST	/cursos/inscricoes	Inscrição do aluno em curso
-
-Ao se inscrever, o aluno tem acesso imediato ao conteúdo do curso e seus módulos.
-
-Módulos
-Método	Rota	Descrição
-POST	/modulos/:cursoId	Criação de módulo
-DELETE	/modulos/:id	Exclusão de módulo
-Progresso
-Método	Rota	Descrição
-GET	/progresso	Consulta progresso do aluno
-POST	/progresso	Atualização de progresso
-Quizzes
-Método	Rota	Descrição
-POST	/quizzes	Criação de quiz
-GET	/quizzes/:moduloId	Quizzes por módulo
-Feedbacks
-Método	Rota	Descrição
-POST	/feedbacks	Envio de feedback
-GET	/feedbacks/:cursoId	Listagem de feedbacks
 
 ### **Segurança**
 
