@@ -50,8 +50,8 @@ package.json
 
 ### **Requisitos**
 
-Node.js versão 18 ou superior
-Banco de dados PostgreSQL
+* **Node.js versão 18 ou superior**
+* **Banco de dados PostgreSQL**
 
 Variáveis de Ambiente
 
@@ -99,8 +99,8 @@ O middleware authMiddleware é responsável por validar o token e disponibilizar
 
 A aplicação trabalha com dois perfis de usuário:
 
-ALUNO
-INSTRUTOR
+* **ALUNO**
+* **INSTRUTOR**
 
 O controle de acesso garante que apenas usuários do tipo INSTRUTOR possam criar, editar ou excluir cursos e módulos.
 
